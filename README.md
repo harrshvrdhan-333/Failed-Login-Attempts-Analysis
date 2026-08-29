@@ -43,7 +43,7 @@ The primary objectives of this investigation were to:
 
 # 🔎 Investigation Methodology
 
-The investigation followed a basic SOC L1 workflow:
+The investigation followed a basic **SOC L1 alert investigation workflow**:
 
 ```text
 Windows Security Logs
@@ -56,7 +56,7 @@ Investigate Account & Source Address
         ↓
 Review Failure Reason & Logon Type
         ↓
-Compare 4625 with 4624
+Compare Event ID 4625 with 4624
         ↓
 Evaluate Brute-Force Indicators
         ↓
@@ -69,13 +69,15 @@ Final Analyst Verdict
 
 # 1️⃣ Identify Failed Login Attempts
 
-The first step was to search for Windows Security Event ID **4625**, which represents a failed logon attempt.
+The first step was to search for Windows Security **Event ID 4625**, which represents a failed logon attempt.
 
 ### SPL Query
 
 ```spl
 index=* sourcetype="WinEventLog:Security" EventCode=4625
 ```
+
+📄 **Query file:** [failed-login-analysis.spl](./queries/failed-login-analysis.spl)
 
 ### Result
 
@@ -97,7 +99,7 @@ The following fields were reviewed during the investigation:
 | `Logon_Type`             | Understand the authentication method              |
 | `Failure_Reason`         | Determine why authentication failed               |
 
-This information helps determine whether the failed authentication was caused by normal system activity or potentially malicious behavior.
+These fields provide useful context for determining whether authentication failures are associated with normal system activity or potentially malicious behavior.
 
 ---
 
@@ -121,21 +123,21 @@ The activity may be associated with local system authentication or an applicatio
 
 The failure reasons associated with the Event ID 4625 entries were reviewed to understand why the authentication attempts failed.
 
-Analyzing failure reasons can help distinguish between:
+Failure reason analysis can help distinguish between:
 
 * Incorrect credentials
 * Invalid accounts
 * Expired credentials
-* Service/application authentication issues
+* Service or application authentication issues
 * Potential password-guessing activity
 
-The observed events did not provide sufficient evidence to confirm malicious authentication activity.
+The available events did not provide sufficient evidence to confirm malicious authentication activity.
 
 ---
 
 # 5️⃣ Successful vs Failed Login Analysis
 
-Successful and failed authentication events were also reviewed.
+Successful and failed authentication events were also reviewed to understand the overall authentication activity.
 
 ### SPL Query
 
@@ -144,7 +146,9 @@ index=* sourcetype="WinEventLog:Security" (EventCode=4624 OR EventCode=4625)
 | stats count by EventCode
 ```
 
-This comparison helps determine whether failed authentication attempts were followed by successful logons.
+📄 **Query file:** [authentication-correlation.spl](./queries/authentication-correlation.spl)
+
+This comparison helps identify the number of successful and failed authentication events.
 
 A pattern involving multiple failed attempts followed by a successful login can warrant further investigation for potential credential compromise.
 
@@ -154,7 +158,7 @@ A pattern involving multiple failed attempts followed by a successful login can 
 
 Repeated failed authentication attempts from the same source can be an indicator of potential brute-force activity.
 
-The following SPL query can be used to identify repeated failed attempts by source and account:
+The following SPL query can be used to identify repeated failed attempts by source address and account:
 
 ```spl
 index=* sourcetype="WinEventLog:Security" EventCode=4625
@@ -162,9 +166,11 @@ index=* sourcetype="WinEventLog:Security" EventCode=4625
 | sort - failed_attempts
 ```
 
-This type of detection can help a SOC analyst identify accounts or source addresses generating an unusual number of failed authentication attempts.
+📄 **Query file:** [brute-force-detection.spl](./queries/brute-force-detection.spl)
 
-**Note:** The current dataset did not provide sufficient evidence to classify the observed activity as a confirmed brute-force attack.
+This detection logic can help a SOC analyst identify source addresses or accounts generating an unusual number of failed authentication attempts.
+
+> **Note:** The current dataset did not provide sufficient evidence to classify the observed activity as a confirmed brute-force attack.
 
 ---
 
@@ -224,12 +230,12 @@ The activity is therefore considered **low severity and potentially related to l
 
 A SOC analyst should continue monitoring authentication activity for:
 
-1. Repeated Event ID **4625** from external IP addresses.
-2. Multiple failed attempts against the same user account.
-3. Failed logins followed by successful **Event ID 4624**.
-4. Authentication failures involving privileged accounts.
-5. Unusual Logon Types or authentication patterns.
-6. Repeated authentication failures across multiple accounts.
+1. Repeated Event ID **4625** from external IP addresses
+2. Multiple failed attempts against the same user account
+3. Failed logins followed by successful **Event ID 4624**
+4. Authentication failures involving privileged accounts
+5. Unusual Logon Types or authentication patterns
+6. Repeated authentication failures across multiple accounts
 
 Additional investigation should be performed if future events reveal external source addresses, abnormal authentication patterns, or successful logons following repeated failures.
 
@@ -237,9 +243,11 @@ Additional investigation should be performed if future events reveal external so
 
 # 📸 Investigation Evidence
 
+All screenshots used as investigation evidence are available in the [`screenshots`](./screenshots/) directory.
+
 ### 1. Failed Login Events
 
-![Failed Events](./Failed%20Events.png)
+![Failed Events](./screenshots/Failed%20Events.png)
 
 Shows the Windows Security Event ID 4625 events identified during the investigation.
 
@@ -247,7 +255,7 @@ Shows the Windows Security Event ID 4625 events identified during the investigat
 
 ### 2. Failure Reason Analysis
 
-![Failure Reason](./Failure%20Reason.png)
+![Failure Reason](./screenshots/Failure%20Reason.png)
 
 Shows the failure reasons associated with the failed authentication events.
 
@@ -255,7 +263,7 @@ Shows the failure reasons associated with the failed authentication events.
 
 ### 3. Account Name & Source IP Analysis
 
-![Account Name and Source IP](./Account%20name%20and%20source%20id.png)
+![Account Name and Source IP](./screenshots/Account%20name%20and%20source%20id.png)
 
 Shows the account and source network address associated with the authentication attempts.
 
@@ -263,7 +271,7 @@ Shows the account and source network address associated with the authentication 
 
 ### 4. All Events Analysis
 
-![All Events](./All%20events.png)
+![All Events](./screenshots/All%20events.png)
 
 Shows the broader authentication event data reviewed during the investigation.
 
@@ -271,7 +279,7 @@ Shows the broader authentication event data reviewed during the investigation.
 
 ### 5. Successful Login Analysis
 
-![Successful Login](./Successfull%20login.png)
+![Successful Login](./screenshots/Successfull%20login.png)
 
 Shows successful authentication events reviewed for correlation with failed login activity.
 
