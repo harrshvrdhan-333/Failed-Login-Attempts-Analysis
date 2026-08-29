@@ -1,0 +1,4 @@
+# Identify Repeated Failed Login Attempts
+index=* sourcetype="WinEventLog:Security" EventCode=4625
+| stats count as failed_attempts by Source_Network_Address, Account_Name
+| sort - failed_attempts
