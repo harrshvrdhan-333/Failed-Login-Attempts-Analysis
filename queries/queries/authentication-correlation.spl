@@ -1,3 +1,0 @@
-# 2. Compare Successful and Failed Logins
-index=* sourcetype="WinEventLog:Security" (EventCode=4624 OR EventCode=4625)
-| stats count by EventCode

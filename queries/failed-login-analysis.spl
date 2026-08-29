@@ -1,2 +1,0 @@
-# 1. Identify Failed Login Attempts
-index=* sourcetype="WinEventLog:Security" EventCode=4625
