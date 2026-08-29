@@ -33,3 +33,48 @@ I searched for Windows Security Event ID 4625 to identify failed login attempts.
 
 ```spl
 index=* sourcetype="WinEventLog:Security" EventCode=4625
+```
+
+A total of 5 failed login events were identified.
+
+### 2. Failed Login Details
+
+The following fields were analyzed:
+
+- Time
+- Computer Name
+- Account Name
+- Account Domain
+- Source Network Address
+- Logon Type
+- Failure Reason
+
+### 3. Successful vs Failed Logins
+
+Successful and failed logon events were compared using the following query:
+
+```spl
+EventCode=4624 OR EventCode=4625
+| stats count by EventCode
+```
+
+## Findings
+
+- Total failed login events identified: 5
+- Failed events originated from `127.0.0.1`
+- The observed account was a machine/system account
+- No clear evidence of an external brute-force attack was identified
+- The observed activity may be related to local system authentication
+
+## Conclusion
+
+Five failed login attempts were identified and analyzed using Splunk. Based on the available logs, no confirmed evidence of an external brute-force attack was found. Continued monitoring of Event ID 4625 is recommended to identify unusual or repeated authentication failures.
+
+## Skills Demonstrated
+
+- Splunk Log Analysis
+- Windows Event Log Analysis
+- Authentication Monitoring
+- Failed Login Investigation
+- Basic SOC L1 Investigation
+- SPL Query Writing
