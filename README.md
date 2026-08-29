@@ -78,3 +78,19 @@ Five failed login attempts were identified and analyzed using Splunk. Based on t
 - Failed Login Investigation
 - Basic SOC L1 Investigation
 - SPL Query Writing
+## Screenshots
+
+### 1. Failed Login Events
+![Failed Events](./Failed%20Events.png)
+
+### 2. Failure Reason Analysis
+![Failure Reason](./Failure%20Reason.png)
+
+### 3. Account Name and Source IP Analysis
+![Account Name and Source IP](./Account%20name%20and%20source%20id.png)
+
+### 4. All Events Analysis
+![All Events](./All%20events.png)
+
+### 5. Successful Login Analysis
+![Successful Login](./Successfull%20login.png)
