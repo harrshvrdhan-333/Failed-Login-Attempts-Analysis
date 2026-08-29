@@ -21,7 +21,7 @@ This project focuses on analyzing Windows Security Event Logs using Splunk to in
 ## Event IDs Analyzed
 
 | Event ID | Description |
-|----------|-------------|
+|---|---|
 | 4625 | Failed Logon |
 | 4624 | Successful Logon |
 
